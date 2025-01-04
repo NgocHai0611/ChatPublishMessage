@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+const app = require("../app");
+const debug = require("debug")("your-app-name:server");
+const http = require("http");
+const socketIo = require("socket.io");
+
+const port = normalizePort(process.env.PORT || "3000");
+app.set("port", port);
+
+const server = http.createServer(app);
+
+// Setup Socket.IO
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:5173", // Địa chỉ frontend React
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
+  socket.on("typing", (room) => socket.in(room).emit("typing"));
+  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
+
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
+
+function normalizePort(val) {
+  const port = parseInt(val, 10);
+  if (isNaN(port)) return val;
+  if (port >= 0) return port;
+  return false;
+}
