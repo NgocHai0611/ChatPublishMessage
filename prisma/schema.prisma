@@ -18,16 +18,19 @@ model Users {
 }
 
 model Chat {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  id   String @id @map("_id")
   chatName String
   isGroupChat Boolean 
   users String[]
+  latestMessage String
+  groupAdmin String
   createdAt String
   lastActivityTime String
+  lastUserSender String
 }
 
 model Messagess {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  id   String @id @map("_id")
   content String
   readBy String[]
   timestamp String
@@ -35,6 +38,15 @@ model Messagess {
   chatID String
 }
 
+model Notifycations {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  receiver String
+  status String
+  timestamp String
+  senderID String
+  chatID String
+}
 
 
 datasource db {
