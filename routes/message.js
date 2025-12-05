@@ -4,6 +4,7 @@ const { getDB } = require("../config/db"); // Import hàm getDB từ db.js
 const { PrismaClient } = require("@prisma/client");
 const { getSocketIo } = require("../socket");
 const { v4: uuidv4 } = require("uuid");
+const client = require("../config/redisConfig");
 
 const prisma = new PrismaClient();
 
@@ -13,9 +14,9 @@ router.post("/sendMessage", async (req, res) => {
 
     const idNewMessage = `M${uuidv4()}`;
 
-    const newMessage = await prisma.messagess.create({
-      data: { id: idNewMessage, senderID, chatID, content, readBy, timestamp },
-    });
+    // const newMessage = await prisma.messagess.create({
+    //   data: { id: idNewMessage, senderID, chatID, content, readBy, timestamp },
+    // });
 
     // Lấy thông tin room chat và danh sách user trong room
     const chatRoom = await prisma.chat.findUnique({
@@ -23,14 +24,14 @@ router.post("/sendMessage", async (req, res) => {
     });
 
     // Cập nhật thông tin chat
-    await prisma.chat.update({
-      where: { id: chatID },
-      data: {
-        lastActivityTime: timestamp,
-        latestMessage: content,
-        lastUserSender: senderID,
-      },
-    });
+    // await prisma.chat.update({
+    //   where: { id: chatID },
+    //   data: {
+    //     lastActivityTime: timestamp,
+    //     latestMessage: content,
+    //     lastUserSender: senderID,
+    //   },
+    // });
 
     const io = getSocketIo();
 
